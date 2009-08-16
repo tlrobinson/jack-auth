@@ -1,0 +1,6 @@
+{
+    "name": "jack-auth",
+    "author": "Neville Burnell",
+    "dependencies": ["narwhal", "jack"],
+    "jars": []
+}
