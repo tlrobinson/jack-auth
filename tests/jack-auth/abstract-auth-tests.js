@@ -4,9 +4,10 @@
  */
 
 var assert = require("test/assert"),
+    MockRequest = require("jack/mock").MockRequest,
     BasicAuth = require("jack-auth/auth/basic.js"),
-    AbstractHandler = require("jack-auth/auth/abstract/handler.js"),
-    AbstractRequest = require("jack-auth/auth/abstract/request.js");
+    AbstractHandler = require("jack-auth/auth/abstract/handler.js").AbstractHandler,
+    AbstractRequest = require("jack-auth/auth/abstract/request.js").AbstractRequest;
 /*,
     Utils       = require("jack/utils"),
     MockRequest = require("jack/mock").MockRequest,
@@ -15,6 +16,13 @@ var assert = require("test/assert"),
     BinaryIO    = require("binary").BinaryIO;
 */    
 
-exports.testTrue = function() {
-    assert.isEqual('fred', 'fred');
+exports.testBadRequest = function() {
+    var env = MockRequest.envFor(null, "/", {});
+    var handler = new AbstractHandler(null, null);    
+    var resp = handler.BadRequest(env);
+
+    assert.eq(resp[0], 400);
+    assert.eq(resp[1]['Content-Type'], 'text/plain');
+    assert.eq(resp[1]['Content-Length'], '0');
+    assert.eq(resp[2].length, 0);
 }
