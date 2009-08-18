@@ -12,9 +12,6 @@ var assert      = require("test/assert");
     BinaryIO    = require("binary").BinaryIO;
 */    
 
-exports.testTrue = function() {
-    assert.isEqual('fred', 'fred');
-}
 
 /*
 exports.testUnescape = function() {
