@@ -3,8 +3,8 @@
  * See README at http://github.com/nevilleburnell/jack-auth for license
  */
 
-exports.testBasicAuth = require("./basic-auth-tests");
-exports.testAbstractAuth = require("./abstract-auth-tests");
+exports.testAuthAbstract = require("./auth-abstract-tests");
+exports.testAuthBasic = require("./auth-basic-tests");
 
 if (require.main === module.id)
     require("test/runner").run(exports);
