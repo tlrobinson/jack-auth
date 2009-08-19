@@ -14,7 +14,8 @@ var assert = require("test/assert"),
     Basic = require("jack-auth/auth/basic");
 
 var BasicHandler = Basic.BasicHandler,
-    BasicRequest = Basic.BasicRequest;
+    BasicRequest = Basic.BasicRequest,
+    BasicMiddleware = Basic.BasicMiddleware;
 
 var realm = 'WallysWorld';
 
@@ -22,11 +23,11 @@ var usernameIsBoss = function(credentials) {
     return ('Boss' == credentials[0]);
 }
 
-var unprotectedApp = function(env) {
+var openApp = function(env) {
     return [ 200, {'Content-Type': 'text/plain'}, ["Hi " + env['REMOTE_USER']] ];
 }
 
-var protectedApp = BasicHandler(unprotectedApp, realm, usernameIsBoss);
+var basicApp = BasicMiddleware(openApp, realm, usernameIsBoss);
 
 var doRequest = function(request, headers) {
     if (headers === undefined) headers = {};
@@ -46,35 +47,69 @@ function assertBasicAuthChallenge(response) {
     assert.eq(0, response[2].length);        
 }
 
+/********************************************************
+ * test BasicRequest
+ ********************************************************/
+
 exports.testBasicRequest = function() {
     var base64Credentials = base64.encode('username' + ':' + 'password');
     var env = MockRequest.envFor(null, "/", {'HTTP_AUTHORIZATION': 'Basic ' + base64Credentials});
     var req = new BasicRequest(env);
 
     assert.eq(true, req.isBasic());
-    assert.eq('username', req.decodeCredentials()[0]);
-    assert.eq('password', req.decodeCredentials()[1]);
+    assert.eq(2, req.decodeCredentials().length);
+    assert.eq('username', req.username);
+    assert.eq('password', req.password);
 }
 
-/*
+/********************************************************
+ * test BasicHandler
+ ********************************************************/
 
+exports.testBasicHandlerValidCredentials = function() {
+    var handler = new BasicHandler(realm, usernameIsBoss);
 
+    //test handler.issueChallenge
+    assert.eq('Basic realm='+realm, handler.issueChallenge());
+
+    //test handler.isValid == true
+    var base64Credentials = base64.encode('Boss' + ':' + 'password');
+    var env = MockRequest.envFor(null, "/", {'HTTP_AUTHORIZATION': 'Basic ' + base64Credentials});
+    var req = new BasicRequest(env);
+
+    assert.eq(true, handler.isValid(req));
+}
+
+exports.testBasicHandlerInvalidCredentials = function() {
+    var handler = new BasicHandler(realm, usernameIsBoss);
+    
+    //test handler.isValid == false
+    var base64Credentials = base64.encode('username' + ':' + 'password');
+    var env = MockRequest.envFor(null, "/", {'HTTP_AUTHORIZATION': 'Basic ' + base64Credentials});
+    var req = new BasicRequest(env);
+
+    assert.eq(false, handler.isValid(req));
+}
+
+/********************************************************
+ * test Basic Auth as Jack middleware
+ ********************************************************/
 
 // should challenge correctly when no credentials are specified
 exports.testChallengeWhenNoCredentials = function() {
-    var request = new MockRequest(protectedApp);
+    var request = new MockRequest(basicApp);
     assertBasicAuthChallenge(doRequest(request));
 }
 
 // should challenge correctly when incorrect credentials are specified
 exports.testChallengeWhenIncorrectCredentials = function() {
-    var request = new MockRequest(protectedApp);
+    var request = new MockRequest(basicApp);
     assertBasicAuthChallenge(doRequestWithBasicAuth(request, 'joe', 'password'));
 }
 
 // should return application output if correct credentials are specified
 exports.testAcceptCorrectCredentials = function() {
-    var request = new MockRequest(protectedApp);
+    var request = new MockRequest(basicApp);
     var response = doRequestWithBasicAuth(request, 'Boss', 'password');
 
     assert.eq(200, response[0]);
