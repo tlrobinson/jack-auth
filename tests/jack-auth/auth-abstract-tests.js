@@ -28,7 +28,7 @@ exports.testUnauthorizedDefaultChallenge = function() {
     var testRealm = "testRealm";
     var handler = new AbstractHandler(testRealm, null);
 
-    handler.challenge = function() {
+    handler.issueChallenge = function() {
         return ('Basic realm=' + this.realm);
     }
 
