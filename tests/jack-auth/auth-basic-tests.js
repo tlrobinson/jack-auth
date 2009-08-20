@@ -17,10 +17,6 @@ var BasicHandler = Basic.BasicHandler,
     BasicRequest = Basic.BasicRequest,
     BasicMiddleware = Basic.BasicMiddleware;
 
-//var print = require('system').print;
-//var jsDump = require('test/jsDump').jsDump;
-
-
 var realm = 'WallysWorld';
 
 var usernameIsBoss = function(credentials) {

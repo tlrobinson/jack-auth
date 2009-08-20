@@ -4,10 +4,29 @@ Port of Rack::Auth to Jack and Narwhal
 
 Status
 ------
-* Basic: In Progress
+* Basic: Completed
 * OpenID: Outstanding
 * Digest: Outstanding
 
+Usage
+-----
+    basicAuth = require("jack-auth/auth/basic").BasicMiddleware;
+
+    var myRealm = "my realm";
+
+    // the authentication function takes username and password and returns
+    // true or false if the pair is accepted or rejected
+    var myAuthenticator = function(username, password) {
+        // validate username and password pair
+        var valid = ...
+        return valid;
+    }
+
+    var myApp = function(env) {
+        return [200,{"Content-Type":"text/plain"},["Hello world!"]];
+    }
+
+    var myAppWithBasicAuth = basicAuth(myApp, myRealm, myAuthenticator);
 
 Contributors
 ------------
