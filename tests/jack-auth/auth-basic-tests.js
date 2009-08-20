@@ -42,6 +42,10 @@ var doRequestWithBasicAuth = function(request, username, password) {
   return doRequest(request, {'HTTP_AUTHORIZATION': 'Basic ' + base64.encode(username + ':' + password)});
 }
 
+var doRequestWithCustomAuth = function(request, username, password) {
+  return doRequest(request, {'HTTP_AUTHORIZATION': 'Custom ' + base64.encode(username + ':' + password)});
+}
+
 function assertBasicAuthChallenge(response) {
     assert.eq(401, response[0]);
     assert.eq('text/plain', response[1]['Content-Type']);
@@ -110,7 +114,6 @@ exports.testChallengeWhenIncorrectCredentials = function() {
     assertBasicAuthChallenge(doRequestWithBasicAuth(request, 'joe', 'password'));
 }
 
-
 // should return application output if correct credentials are specified
 exports.testAcceptCorrectCredentials = function() {
     var request = new MockRequest(basicApp);
@@ -121,33 +124,15 @@ exports.testAcceptCorrectCredentials = function() {
     assert.eq('Hi Boss', response[2][0]);
 }
 
+// should return 400 Bad Request if different auth scheme used
+exports.testBadRequestIfSchemeNotBasic = function() {
+    var request = new MockRequest(basicApp);
+    var response = doRequestWithCustomAuth(request, 'Boss', 'password');
 
-/*
-
-
-
-  specify 'should return application output if correct credentials are specified' do
-    request_with_basic_auth 'Boss', 'password' do |response|
-      response.status.should.equal 200
-      response.body.to_s.should.equal 'Hi Boss'
-    end
-  end
-
-  specify 'should return 400 Bad Request if different auth scheme used' do
-    request 'HTTP_AUTHORIZATION' => 'Digest params' do |response|
-      response.should.be.a.client_error
-      response.status.should.equal 400
-      response.should.not.include 'WWW-Authenticate'
-    end
-  end
-
-  specify 'realm as optional constructor arg' do
-    app = Rack::Auth::Basic.new(unprotected_app, realm) { true }
-    assert_equal realm, app.realm
-  end
-end
-*/
-
+    assert.eq(400, response[0]);
+    assert.eq(0, response[2].length);
+    assert.eq(undefined, response[1]['WWW-Authenticate']);
+}
 
 /*
 require 'test/spec'
