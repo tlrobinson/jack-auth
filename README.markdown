@@ -27,7 +27,7 @@ Usage: Basic Authentication
     }
 
     var myApp = function(env) {
-        return [200,{"Content-Type":"text/plain"},["Hello world!"]];
+        return [200,{"Content-Type":"text/plain"},["Hello Admin!"]];
     }
 
     var myAppWithBasicAuth = basicAuth(myApp, myRealm, myAuthenticator);
