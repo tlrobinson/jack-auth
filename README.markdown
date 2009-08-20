@@ -12,8 +12,8 @@ History
 -------
 * 0.1 First Release. Basic Authentication. 2009-08-20
 
-Usage: Basic Auth
------------------
+Usage: Basic Authentication
+---------------------------
     basicAuth = require("jack-auth/auth/basic").BasicMiddleware;
 
     var myRealm = "my realm";
@@ -21,9 +21,8 @@ Usage: Basic Auth
     // the authentication function takes username and password and returns
     // true or false if the pair is accepted or rejected
     var myAuthenticator = function(username, password) {
-        // validate username and password pair
-        var valid = ...
-        return valid;
+        if (username == 'admin' && password == 'pass') return true; //allow
+        return false; //deny
     }
 
     var myApp = function(env) {
