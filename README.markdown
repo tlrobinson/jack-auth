@@ -8,6 +8,10 @@ Status
 * OpenID: Outstanding
 * Digest: Outstanding
 
+History
+-------
+* 0.1 First Release. Basic Authentication. 2009-08-20
+
 Usage: Basic Auth
 -----------------
     basicAuth = require("jack-auth/auth/basic").BasicMiddleware;
