@@ -8,8 +8,8 @@ Status
 * OpenID: Outstanding
 * Digest: Outstanding
 
-Usage
------
+Usage: Basic Auth
+-----------------
     basicAuth = require("jack-auth/auth/basic").BasicMiddleware;
 
     var myRealm = "my realm";
