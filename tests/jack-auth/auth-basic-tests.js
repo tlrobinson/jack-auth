@@ -47,11 +47,11 @@ var doRequestWithCustomAuth = function(request, username, password) {
 }
 
 function assertBasicAuthChallenge(response) {
-    assert.eq(401, response[0]);
-    assert.eq('text/plain', response[1]['Content-Type']);
-    assert.eq('0', response[1]['Content-Length']);
-    assert.eq('Basic realm='+realm, response[1]['WWW-Authenticate']);
-    assert.eq(0, response[2].length);        
+    assert.eq(401,                  response.status);
+    assert.eq('text/plain',         response.headers['Content-Type']);
+    assert.eq('0',                  response.headers['Content-Length']);
+    assert.eq('Basic realm='+realm, response.headers['WWW-Authenticate']);
+    assert.eq("",                   response.body);
 }
 
 /********************************************************
@@ -119,9 +119,8 @@ exports.testAcceptCorrectCredentials = function() {
     var request = new MockRequest(basicApp);
     var response = doRequestWithBasicAuth(request, 'Boss', 'password');
 
-    assert.eq(200, response[0]);
-    assert.eq(1, response[2].length);
-    assert.eq('Hi Boss', response[2][0]);
+    assert.eq(200, response.status);
+    assert.eq('Hi Boss', response.body);
 }
 
 // should return 400 Bad Request if different auth scheme used
@@ -129,9 +128,9 @@ exports.testBadRequestIfSchemeNotBasic = function() {
     var request = new MockRequest(basicApp);
     var response = doRequestWithCustomAuth(request, 'Boss', 'password');
 
-    assert.eq(400, response[0]);
-    assert.eq(0, response[2].length);
-    assert.eq(undefined, response[1]['WWW-Authenticate']);
+    assert.eq(400,       response.status);
+    assert.eq("",        response.body);
+    assert.eq(undefined, response.headers['WWW-Authenticate']);
 }
 
 /*
