@@ -17,6 +17,10 @@ var BasicHandler = Basic.BasicHandler,
     BasicRequest = Basic.BasicRequest,
     BasicMiddleware = Basic.BasicMiddleware;
 
+//var print = require('system').print;
+//var jsDump = require('test/jsDump').jsDump;
+
+
 var realm = 'WallysWorld';
 
 var usernameIsBoss = function(credentials) {
@@ -31,7 +35,6 @@ var basicApp = BasicMiddleware(openApp, realm, usernameIsBoss);
 
 var doRequest = function(request, headers) {
     if (headers === undefined) headers = {};
-
     return request.GET('/', headers);
 }
 
@@ -106,6 +109,7 @@ exports.testChallengeWhenIncorrectCredentials = function() {
     var request = new MockRequest(basicApp);
     assertBasicAuthChallenge(doRequestWithBasicAuth(request, 'joe', 'password'));
 }
+
 
 // should return application output if correct credentials are specified
 exports.testAcceptCorrectCredentials = function() {
