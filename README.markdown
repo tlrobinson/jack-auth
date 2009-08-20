@@ -18,8 +18,9 @@ Usage: Basic Authentication
 
     var myRealm = "my realm";
 
-    // the authentication function takes username and password and returns
+    // the authenticator takes a username and password and returns
     // true or false if the pair is accepted or rejected
+
     var myAuthenticator = function(username, password) {
         if (username == 'admin' && password == 'pass') return true; //allow
         return false; //deny
