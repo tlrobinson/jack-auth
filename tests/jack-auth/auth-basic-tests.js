@@ -20,7 +20,7 @@ var BasicHandler = Basic.BasicHandler,
 var realm = 'WallysWorld';
 
 var usernameIsBoss = function(credentials) {
-    return ('Boss' == credentials[0]);
+    return ('Boss' == credentials.username);
 }
 
 var openApp = function(env) {
@@ -60,7 +60,7 @@ exports.testBasicRequest = function() {
     var req = new BasicRequest(env);
 
     assert.eq(true, req.isBasic());
-    assert.eq(2, req.decodeCredentials().length);
+    assert.eq(req, req.decodeCredentials());
     assert.eq('username', req.username);
     assert.eq('password', req.password);
 }

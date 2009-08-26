@@ -18,11 +18,11 @@ Usage: Basic Authentication
 
     var myRealm = "my realm";
 
-    // the authenticator takes a username and password and returns
+    // the authenticator takes an object which exposes username and password and returns
     // true or false if the pair is accepted or rejected
 
-    var myAuthenticator = function(username, password) {
-        if (username == 'admin' && password == 'pass') return true; //allow
+    var myAuthenticator = function(auth) {
+        if (auth.username == 'admin' && auth.password == 'pass') return true; //allow
         return false; //deny
     }
 
