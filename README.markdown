@@ -10,7 +10,8 @@ Status
 
 History
 -------
-* 0.1 First Release. Basic Authentication. 2009-08-20
+* 2009-08-26 0.2 Changed authenticator() parameters.
+* 2009-08-20 0.1 First Release. Basic Authentication. 
 
 Usage: Basic Authentication
 ---------------------------
