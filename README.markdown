@@ -17,7 +17,7 @@ History
 
 Usage: Basic Authentication
 ---------------------------
-    basicAuth = require("jack-auth/auth/basic").BasicMiddleware;
+    basicAuth = require("jack/auth/basic").BasicMiddleware;
 
     var myRealm = "my realm";
 
@@ -44,7 +44,7 @@ Usage: Basic Authentication
 
 Usage: Digest Authentication
 ---------------------------
-    digestAuth = require("jack-auth/auth/digest/md5").DigestMD5Middleware;
+    digestAuth = require("jack/auth/digest/md5").DigestMD5Middleware;
 
     var myRealm = "my realm";
 

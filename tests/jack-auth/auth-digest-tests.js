@@ -13,9 +13,9 @@ var assert = require("test/assert"),
     Hash = require("hash").Hash,
     md5 = require('md5').hash,
     MockRequest = require("jack/mock").MockRequest,
-    DigestMD5 = require("jack-auth/auth/digest/md5"),
-    DigestRequest = require("jack-auth/auth/digest/request").DigestRequest,
-    DigestParams = require("jack-auth/auth/digest/params");
+    DigestMD5 = require("jack/auth/digest/md5"),
+    DigestRequest = require("jack/auth/digest/request").DigestRequest,
+    DigestParams = require("jack/auth/digest/params");
 
 var pp = function(o){print(require('test/jsdump').jsDump.parse(o))};
 

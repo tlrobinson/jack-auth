@@ -11,7 +11,7 @@
 var assert = require("test/assert"),
     base64 = require("base64"),
     MockRequest = require("jack/mock").MockRequest,
-    Basic = require("jack-auth/auth/basic");
+    Basic = require("jack/auth/basic");
 
 var BasicHandler = Basic.BasicHandler,
     BasicRequest = Basic.BasicRequest,
