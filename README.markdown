@@ -5,7 +5,7 @@ Port of Rack::Auth to Jack and Narwhal
 Status
 ------
 * Basic: Completed
-* Digest: Completed
+* Digest: Completed. Tests outstanding.
 * OpenID: Outstanding
 
 History
