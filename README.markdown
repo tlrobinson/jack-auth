@@ -11,9 +11,7 @@ Status
 History
 -------
 * 2009-09-09 V0.4 Digest Authentication.
-* 2009-09-04 V0.3 Conform to Jack response specification change from array to object.
-                  Changed api from BasicMiddleware(app, realm, authenticator) to
-                  BasicMiddleware(app, options) where options exposes realm and authenticator.
+* 2009-09-04 V0.3 Conform to Jack response specification change from array to object.  BasicMiddleware() API change.
 * 2009-08-26 V0.2 Changed authenticator() parameters.
 * 2009-08-20 V0.1 First Release. Basic Authentication. 
 
