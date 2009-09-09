@@ -17,17 +17,23 @@ var BasicHandler = Basic.BasicHandler,
     BasicRequest = Basic.BasicRequest,
     BasicMiddleware = Basic.BasicMiddleware;
 
-var realm = 'WallysWorld';
-
-var usernameIsBoss = function(credentials) {
+var myRealm = 'WallysWorld';
+var myAuth = function(credentials) {
     return ('Boss' == credentials.username);
 }
 
 var openApp = function(env) {
-    return [ 200, {'Content-Type': 'text/plain'}, ["Hi " + env['REMOTE_USER']] ];
+    return {
+        status: 200,
+        headers: {'Content-Type': 'text/plain'},
+        body: ["Hi " + env['REMOTE_USER']]
+    };
 }
 
-var basicApp = BasicMiddleware(openApp, realm, usernameIsBoss);
+var basicApp = BasicMiddleware(openApp, {
+    realm: myRealm,
+    authenticator: myAuth
+});
 
 var doRequest = function(request, headers) {
     if (headers === undefined) headers = {};
@@ -35,19 +41,20 @@ var doRequest = function(request, headers) {
 }
 
 var doRequestWithBasicAuth = function(request, username, password) {
-  return doRequest(request, {'HTTP_AUTHORIZATION': 'Basic ' + base64.encode(username + ':' + password)});
+  return doRequest(request, {'HTTP_AUTHORIZATION': 'Basic ' + base64.encode([username, password].join(':'))});
 }
 
 var doRequestWithCustomAuth = function(request, username, password) {
-  return doRequest(request, {'HTTP_AUTHORIZATION': 'Custom ' + base64.encode(username + ':' + password)});
+  return doRequest(request, {'HTTP_AUTHORIZATION': 'Custom ' + base64.encode([username, password].join(':'))});
 }
 
 function assertBasicAuthChallenge(response) {
     assert.eq(401,                  response.status);
     assert.eq('text/plain',         response.headers['Content-Type']);
     assert.eq('0',                  response.headers['Content-Length']);
-    assert.eq('Basic realm='+realm, response.headers['WWW-Authenticate']);
-    assert.eq("",                   response.body);
+    assert.isTrue(response.headers['WWW-Authenticate'].search(/^Basic/) != -1);    
+    assert.eq('Basic realm='+myRealm, response.headers['WWW-Authenticate']);
+    assert.eq(0,                    response.body.length);
 }
 
 /********************************************************
@@ -55,14 +62,13 @@ function assertBasicAuthChallenge(response) {
  ********************************************************/
 
 exports.testBasicRequest = function() {
-    var base64Credentials = base64.encode('username' + ':' + 'password');
-    var env = MockRequest.envFor(null, "/", {'HTTP_AUTHORIZATION': 'Basic ' + base64Credentials});
+    var username = 'username', password = 'password';
+    var env = MockRequest.envFor(null, "/", {'HTTP_AUTHORIZATION': 'Basic ' + base64.encode([username, password].join(':'))});
     var req = new BasicRequest(env);
 
-    assert.eq(true, req.isBasic());
-    assert.eq(req, req.decodeCredentials());
-    assert.eq('username', req.username);
-    assert.eq('password', req.password);
+    assert.isTrue(req.isBasic());
+    assert.eq(username, req.username);
+    assert.eq(password, req.password);
 }
 
 /********************************************************
@@ -70,28 +76,34 @@ exports.testBasicRequest = function() {
  ********************************************************/
 
 exports.testBasicHandlerValidCredentials = function() {
-    var handler = new BasicHandler(realm, usernameIsBoss);
+    var handler = new BasicHandler({
+        realm: myRealm,
+        authenticator: myAuth
+    });
 
     //test handler.issueChallenge
-    assert.eq('Basic realm='+realm, handler.issueChallenge());
+    assert.eq('Basic realm='+myRealm, handler.issueChallenge());
 
     //test handler.isValid == true
-    var base64Credentials = base64.encode('Boss' + ':' + 'password');
+    var base64Credentials = base64.encode(['Boss', 'password'].join(':'));
     var env = MockRequest.envFor(null, "/", {'HTTP_AUTHORIZATION': 'Basic ' + base64Credentials});
     var req = new BasicRequest(env);
 
-    assert.eq(true, handler.isValid(req));
+    assert.isTrue(handler.isValid(req));
 }
 
 exports.testBasicHandlerInvalidCredentials = function() {
-    var handler = new BasicHandler(realm, usernameIsBoss);
+    var handler = new BasicHandler({
+        realm: myRealm,
+        authenticator: myAuth
+    });
     
     //test handler.isValid == false
-    var base64Credentials = base64.encode('username' + ':' + 'password');
+    var base64Credentials = base64.encode(['username', 'password'].join(':'));
     var env = MockRequest.envFor(null, "/", {'HTTP_AUTHORIZATION': 'Basic ' + base64Credentials});
     var req = new BasicRequest(env);
 
-    assert.eq(false, handler.isValid(req));
+    assert.isFalse(handler.isValid(req));
 }
 
 /********************************************************

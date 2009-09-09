@@ -15,18 +15,18 @@ var assert = require("test/assert"),
  */
 
 exports.testBadRequest = function() {
-    var handler = new AbstractHandler(null, null);
+    var handler = new AbstractHandler();
     var resp = handler.BadRequest();
 
-    assert.eq(400, resp[0]);
-    assert.eq('text/plain', resp[1]['Content-Type']);
-    assert.eq('0', resp[1]['Content-Length']);
-    assert.eq(0, resp[2].length);
+    assert.eq(400, resp.status);
+    assert.eq('text/plain', resp.headers['Content-Type']);
+    assert.eq('0', resp.headers['Content-Length']);
+    assert.eq(0, resp.body.length);
 }
 
 exports.testUnauthorizedDefaultChallenge = function() {
     var testRealm = "testRealm";
-    var handler = new AbstractHandler(testRealm, null);
+    var handler = new AbstractHandler({realm:testRealm});
 
     handler.issueChallenge = function() {
         return ('Basic realm=' + this.realm);
@@ -34,46 +34,24 @@ exports.testUnauthorizedDefaultChallenge = function() {
 
     var resp = handler.Unauthorized();
 
-    assert.eq(401, resp[0]);
-    assert.eq('text/plain', resp[1]['Content-Type']);
-    assert.eq('0', resp[1]['Content-Length']);
-    assert.eq('Basic realm='+testRealm, resp[1]['WWW-Authenticate']);
-    assert.eq(0, resp[2].length);
+    assert.eq(401, resp.status);
+    assert.eq('text/plain', resp.headers['Content-Type']);
+    assert.eq('0', resp.headers['Content-Length']);
+    assert.eq('Basic realm='+testRealm, resp.headers['WWW-Authenticate']);
+    assert.eq(0, resp.body.length);
 
 }
 
 exports.testUnauthorizedCustomChallenge = function() {
     var testRealm = "testRealm";
-    var handler = new AbstractHandler(testRealm, null);
+    var handler = new AbstractHandler({realm:testRealm});
 
     var realm = "Custom realm="+testRealm;
     var resp = handler.Unauthorized(realm);
 
-    assert.eq(401, resp[0]);
-    assert.eq('text/plain', resp[1]['Content-Type']);
-    assert.eq('0', resp[1]['Content-Length']);
-    assert.eq(realm, resp[1]['WWW-Authenticate']);
-    assert.eq(0, resp[2].length);
-}
-
-/*
- * tests for AbstractRequest
- */
-
-exports.testUnauthorizedRequest = function() {
-    var env = MockRequest.envFor(null, "/", {});
-    var req = new AbstractRequest(env);
-
-    assert.eq(false, req.authorizationKeyFound());
-}
-
-exports.testAuthorizedRequest = function() {
-    var base64Credentials = base64.encode('username' + ':' + 'password');
-    var env = MockRequest.envFor(null, "/", {'HTTP_AUTHORIZATION': 'Basic ' + base64Credentials});
-    var req = new AbstractRequest(env);
-
-    assert.eq(true, req.authorizationKeyFound());
-    assert.eq('HTTP_AUTHORIZATION', req.authorizationKey());
-    assert.eq('basic', req.scheme());
-    assert.eq(base64Credentials, req.credentials());
+    assert.eq(401, resp.status);
+    assert.eq('text/plain', resp.headers['Content-Type']);
+    assert.eq('0', resp.headers['Content-Length']);
+    assert.eq(realm, resp.headers['WWW-Authenticate']);
+    assert.eq(0, resp.body.length);
 }

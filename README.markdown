@@ -5,13 +5,17 @@ Port of Rack::Auth to Jack and Narwhal
 Status
 ------
 * Basic: Completed
+* Digest: Completed
 * OpenID: Outstanding
-* Digest: Outstanding
 
 History
 -------
-* 2009-08-26 v0.2 Changed authenticator() parameters.
-* 2009-08-20 v0.1 First Release. Basic Authentication. 
+* 2009-09-09 V0.4 Digest Authentication.
+* 2009-09-04 V0.3 Conform to Jack response specification change from array to object.
+                  Changed api from BasicMiddleware(app, realm, authenticator) to
+                  BasicMiddleware(app, options) where options exposes realm and authenticator.
+* 2009-08-26 V0.2 Changed authenticator() parameters.
+* 2009-08-20 V0.1 First Release. Basic Authentication. 
 
 Usage: Basic Authentication
 ---------------------------
@@ -28,10 +32,43 @@ Usage: Basic Authentication
     }
 
     var myApp = function(env) {
-        return [200,{"Content-Type":"text/plain"},["Hello Admin!"]];
+        return {
+            status: 200,
+            headers: {"Content-Type": "text/plain"},
+            body: ["Hello Admin!"]
+        }
     }
 
-    var myAppWithBasicAuth = basicAuth(myApp, myRealm, myAuthenticator);
+    var myAppWithBasicAuth = basicAuth(myApp, {
+        realm: myRealm,
+        authenticator: myAuthenticator
+    });
+
+Usage: Digest Authentication
+---------------------------
+    digestAuth = require("jack-auth/auth/digest/md5").DigestMD5Middleware;
+
+    var myRealm = "my realm";
+
+    // getPassword returns the password [clear text or hashed] for a username
+    
+    var getPassword = function(username) {
+        return {'admin': 'password'}[username];
+    }
+
+    var myApp = function(env) {
+        return {
+            status: 200,
+            headers: {"Content-Type": "text/plain"},
+            body: ["Hello Admin!"]
+        }
+    }
+
+    var myAppWithDigestAuth = digestAuth(myApp, {
+        realm: myRealm,
+        opaque: "this-is-a-secret",
+        getPassword: getPassword
+    });
 
 Contributors
 ------------

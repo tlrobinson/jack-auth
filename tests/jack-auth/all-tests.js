@@ -5,6 +5,7 @@
 
 exports.testAuthAbstract = require("./auth-abstract-tests");
 exports.testAuthBasic = require("./auth-basic-tests");
+exports.testAuthDigest = require("./auth-digest-tests");
 
 if (require.main === module.id)
     require("test/runner").run(exports);
